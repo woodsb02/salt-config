@@ -1,0 +1,3 @@
+eval $(keychain --agents ssh --eval ~/.ssh/freebsd-id_ed25519)
+eval $(keychain --agents ssh --eval ~/.ssh/github-id_ed25519)
+eval $(keychain --agents ssh --eval ~/.ssh/womlins-id_ed25519)

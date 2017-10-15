@@ -1,0 +1,31 @@
+{{ pillar['headers']['salt']['file'] }}
+{% set num_cpus = salt['grains.get']('num_cpus') -%}
+user www www;
+worker_processes {{ num_cpus }};
+
+error_log syslog:server=unix:/dev/log,facility=local7,tag=nginx_error error;
+
+events {
+	worker_connections	1024;
+}
+
+http {
+	include		mime.types;
+	default_type	application/octet-stream;
+	sendfile	on;
+	keepalive_timeout	65;
+
+	gzip			on;
+	gzip_http_version	1.0;
+	gzip_comp_level		6;
+	gzip_proxied		any;
+	gzip_min_length		1100;
+	gzip_buffers		16 8k;
+	gzip_types		text/plain text/css application/x-javascript text/xml application/xml application/xml+rss text/javascript image/gif image/jpeg image/png application/json image/svg+xml;
+
+	types {
+		text/plain	log;
+	}
+
+	include /usr/local/etc/nginx/sites-enabled/*;
+}

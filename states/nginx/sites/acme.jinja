@@ -1,0 +1,15 @@
+{{ pillar['headers']['salt']['file'] }}
+server {
+	listen		80 default_server;
+	listen		[::]:80 default_server;
+
+	# Lets encrypt
+	location ^~ /.well-known/acme-challenge/ {
+		alias	/usr/local/www/acme/;
+	}
+
+	# Redirect all HTTP requests to HTTPS with a 301 Moved Permanently response.
+	location / {
+		return	301 https://$host$request_uri;
+	}
+}

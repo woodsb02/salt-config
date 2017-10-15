@@ -1,0 +1,4 @@
+{{ pillar['headers']['salt']['file'] }}
+{% if grains['id'].endswith('.woods.am') -%}
+GSSAPIAuthentication yes
+{% endif -%}

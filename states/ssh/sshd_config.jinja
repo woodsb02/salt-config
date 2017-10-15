@@ -1,0 +1,10 @@
+{{ pillar['headers']['salt']['file'] }}
+PasswordAuthentication no
+ChallengeResponseAuthentication no
+{% if grains['id'].endswith('.woods.am') -%}
+GSSAPIAuthentication yes
+{% endif -%}
+UsePAM no
+
+# override default of no subsystems
+Subsystem	sftp	/usr/libexec/sftp-server

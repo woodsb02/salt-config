@@ -1,0 +1,14 @@
+host freefall.freebsd.org kpasswd.freebsd.org repo.freebsd.org
+	User woodsb02
+	IdentityFile ~/.ssh/freebsd-id_ed25519
+host reviews.freebsd.org
+	User woodsb02_gmail.com
+	PreferredAuthentications keyboard-interactive,password
+host github.com
+	User git
+	IdentityFile ~/.ssh/github-id_ed25519
+host womlins.wedding
+	User woodsb02
+	IdentityFile ~/.ssh/womlins-id_ed25519
+host 188.166.229.200
+	User root

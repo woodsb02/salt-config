@@ -1,0 +1,136 @@
+{{ pillar['headers']['salt']['file'] }}
+setopt AUTO_CD
+setopt PRINT_EXIT_VALUE
+setopt HIST_IGNORE_ALL_DUPS
+setopt EXTENDED_GLOB
+setopt appendhistory autocd extendedglob
+unsetopt beep
+
+# Get completion above command line
+setopt NOALWAYSLASTPROMPT
+setopt NOAUTO_REMOVE_SLASH
+setopt LIST_TYPES
+setopt COMPLETE_IN_WORD
+unlimit
+ 
+HISTFILE=~/.zshhistfile
+HISTSIZE=1500
+SAVEHIST=1500
+ 
+zstyle ':completion:*' completer _complete _ignored
+zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|[._-]=* r:|=*'
+zstyle :compinstall filename '~/.zshrc'
+ 
+autoload -Uz compinit
+compinit
+ 
+#autoload -U promptinit
+#promptinit
+ 
+# colors: RED GREEN YELLOW WHITE BLACK CYAN
+autoload -U colors && colors
+PROMPT="%{$fg[green]%}%B%n::%m%b%{$reset_color%}%{$fg[yellow]%}(%l, %~)%{$reset_color%}> "
+RPROMPT=" <%{$bg[white]%}%{$fg[black]%}[%h][%T]%{$reset_color%}]"
+ 
+alias ls='ls -G'
+alias grep='grep --color'
+alias nano='nano -c'
+ 
+# format titles for screen and rxvt
+function title() {
+  # escape '%' chars in $1, make nonprintables visible
+  a=${(V)1//\%/\%\%}
+ 
+  # Truncate command, and join lines.
+  a=$(print -Pn "%40>...>$a" | tr -d "\n")
+ 
+  case $TERM in
+  screen)
+    print -Pn "\ek$a:$3\e\\"      # screen title (in ^A")
+    ;;
+  xterm*|rxvt)
+    print -Pn "\e]2;$2 | $a:$3\a" # plain xterm title
+    ;;
+  esac
+}
+ 
+# precmd is called just before the prompt is printed
+function precmd() {
+  title "zsh" "$USER@%m" "%55<...<%~"
+}
+ 
+# preexec is called just before any command line is executed
+function preexec() {
+  title "$1" "$USER@%m" "%35<...<%~"
+}
+ 
+bindkey '^[[1~' beginning-of-line
+bindkey '^[[3~' delete-char
+bindkey '^[[4~' end-of-line
+bindkey '^[[5~' beginning-of-history
+bindkey '^[[6~' end-of-history
+autoload -Uz history-search-end
+zle -N history-beginning-search-backward-end history-search-end
+zle -N history-beginning-search-forward-end history-search-end
+bindkey "^[[A" history-beginning-search-backward-end
+bindkey "^[[B" history-beginning-search-forward-end
+
+# PATH
+export PATH=$HOME/bin:/usr/local/bin:/usr/local/sbin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/X11R6/bin:/usr/local/jdk/bin
+if [ -x /etc/profile ]; then
+    setopt -G
+    . /etc/profile
+    setopt +G
+fi
+
+# List all directories leading up to a filename; this is useful to see
+# if some permissions are blocking access to a file.
+#
+lspath () {
+        if [ "$1" = "${1##/}" ]
+        then
+	    pathlist=(/ ${(s:/:)PWD} ${(s:/:)1})
+	else
+	    pathlist=(/ ${(s:/:)1})
+	fi
+        allpaths=()
+        filepath=$pathlist[0]
+        shift pathlist
+        for i in $pathlist[@]
+        do
+                allpaths=($allpaths[@] $filepath) 
+                filepath="${filepath%/}/$i" 
+        done
+        allpaths=($allpaths[@] $filepath) 
+        ls -ld "$allpaths[@]"
+}
+
+###
+### Misc completion control
+###
+
+# Manual page completion
+man_glob () {
+  local a
+  read -cA a
+  if [[ $a[2] = [0-9]* ]] then	# BSD section number
+    reply=( $^manpath/man$a[2]/$1*$2(N:t:r) )
+  elif [[ $a[2] = -s ]] then	# SysV section number
+    reply=( $^manpath/man$a[3]/$1*$2(N:t:r) )
+  else
+    reply=( $^manpath/man*/$1*$2(N:t:r) )
+  fi
+}
+compctl -K man_glob man
+
+# Complete commmands after .
+compctl -c .
+
+# Miscellaneous stuff
+export PAGER="/usr/bin/less"
+export EDITOR="/usr/local/bin/vim"
+#export TZ="Australia/Perth"
+source /usr/local/share/zsh-navigation-tools/zsh-navigation-tools.plugin.zsh
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# End of lines

@@ -1,0 +1,8 @@
+{{ pillar['headers']['salt']['file'] -}}
+#
+# FreeBSD base system repository
+FreeBSD-base: {
+  url: "pkg+https://pkg.woods.am/FreeBSD-base/${ABI}/latest",
+  mirror_type: "srv",
+  enabled: yes
+}

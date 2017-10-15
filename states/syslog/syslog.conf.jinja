@@ -1,0 +1,29 @@
+{% if grains['id'] == 'freenas.woods.am' -%}
+  {% set subdir = 'freenas/' -%}
+{% else -%}
+  {% set subdir = '' -%}
+{% endif -%}
+{{ pillar['headers']['salt']['file'] -}}
+#
+# SELECTOR							ACTION
+# FACILITY.[!<=>]LEVEL
++@
+*.err;kern.warning;auth.notice;mail.crit			/dev/console
+auth.info;authpriv.info						/var/log/{{ subdir }}auth.log
+console.info							/var/log/{{ subdir }}console.log
+cron.*								/var/log/{{ subdir }}cron
+lpr.info							/var/log/{{ subdir }}lpd-errs
+mail.info							/var/log/{{ subdir }}maillog
+*.notice;authpriv.none;kern.debug;lpr.info;mail.crit;news.err	/var/log/{{ subdir }}messages
+security.*							/var/log/{{ subdir }}security
+ftp.info							/var/log/{{ subdir }}xferlog
+!-devd
+*.=debug							/var/log/{{ subdir }}debug.log
+*.emerg								*
+!devd
+*.>=notice							/var/log/{{ subdir }}devd.log
+!ppp
+*.*								/var/log/{{ subdir }}ppp.log
+!*
+include								/etc/syslog.d
+include								/usr/local/etc/syslog.d

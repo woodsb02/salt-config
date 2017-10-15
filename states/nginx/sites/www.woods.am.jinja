@@ -1,0 +1,36 @@
+{{ pillar['headers']['salt']['file'] }}
+server {
+	server_name		www.woods.am woods.am;
+	root			/usr/local/www;
+	access_log		syslog:server=unix:/dev/log,facility=local7,tag=nginx_access combined;
+	index			index.php index.html;
+	include			ssl.conf;
+
+	rewrite ^(/plexhometheater/)(.*)$ https://www.freshports.org/multimedia/plexhometheater/$2 permanent;
+
+	#error_page	404			/404.html;
+
+	# redirect server error pages to the static page /50x.html
+	#
+	error_page	500 502 503 504	/50x.html;
+	location = /50x.html {
+		root	/usr/local/www/nginx-dist;
+	}
+
+	# pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+	#
+	location ~ \.php$ {
+		fastcgi_pass	127.0.0.1:9000;
+		try_files	$uri =404;
+		fastcgi_index	index.php;
+		fastcgi_param	SCRIPT_FILENAME	$document_root$fastcgi_script_name;
+		include	fastcgi_params;
+	}
+
+	# deny access to .htaccess files, if Apache's document root
+	# concurs with nginx's one
+	#
+	location ~ /\.ht {
+		deny	all;
+	}
+}

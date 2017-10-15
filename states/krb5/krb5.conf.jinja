@@ -1,0 +1,17 @@
+{{ pillar['headers']['salt']['file'] }}
+[libdefaults]
+	default_realm = WOODS.AM
+
+[realms]
+# use "kdc = ..." if realm admins haven't put SRV records into DNS
+	WOODS.AM = {
+		kdc = kdc1.woods.am
+		admin_server = kdc1.woods.am
+	}
+
+[domain_realm]
+	.woods.am = WOODS.AM
+	woods.am = WOODS.AM
+
+[logging]
+#	kdc = CONSOLE
